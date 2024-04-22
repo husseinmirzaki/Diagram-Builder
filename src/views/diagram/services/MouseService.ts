@@ -1,6 +1,7 @@
 import {PanService} from "@/views/diagram/services/PanService";
 import Container from "@/views/diagram/components/Container";
 import type {Drawable} from "@/views/diagram/components/Drawable";
+import {AppInstance} from "@/AppInstance";
 
 export class MouseService {
     static x: number = 0;
@@ -8,6 +9,8 @@ export class MouseService {
     static isDown: boolean = false;
     static isMoved: boolean = false;
     static isClick: boolean = false;
+    static mouseEvent?: MouseEvent;
+    static pointerEvent?: MouseEvent;
 
     static init() {
         window.addEventListener("mousedown", this.onMouseDown.bind(this));
@@ -24,36 +27,36 @@ export class MouseService {
     }
 
     static onMouseDown(e: PointerEvent) {
+        AppInstance.mitt.emit("mousedown", e);
         this.isDown = true;
     }
 
     static onMouseUp(e: PointerEvent) {
+        AppInstance.mitt.emit("mouseup", e);
         this.isDown = false;
     }
 
     static onClick(e: PointerEvent) {
-
+        this.pointerEvent = e;
         if (!this.isMoved) {
             this.isClick = true;
         } else {
             this.isMoved = false;
         }
 
-        Container.container.redraw();
+        AppInstance.mitt.emit("click", e);
     }
 
     static onMouseMove(e: MouseEvent) {
+        this.mouseEvent = e;
         this.x = e.x;
         this.y = e.y;
         if (this.isDown) {
-            PanService.x += e.movementX;
-            PanService.y += e.movementY;
             this.isMoved = true;
         } else {
             this.isMoved = false;
         }
-
-        Container.container.redraw();
+        AppInstance.mitt.emit("mousemove", e);
     }
 
     static isOnRect(x, y, width, height) {

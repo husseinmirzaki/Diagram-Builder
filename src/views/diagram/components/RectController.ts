@@ -1,16 +1,17 @@
-import type Rect from "@/views/diagram/components/Rect";
+import Rect from "@/views/diagram/components/Rect";
 import {Drawable} from "@/views/diagram/components/Drawable";
-import {Point} from "@/views/diagram/components/Point";
+import type Circle from "@/views/diagram/components/Circle";
 
-export class RectControllerOptions {
+export interface RectControllerOptions {
     rect: Rect;
-    margin: number;
+    margin?: number;
 }
 
 export class RectController extends Drawable {
 
     options: RectControllerOptions;
     coverRect: Rect;
+    controllers: Array<Circle> = [];
 
     constructor(options: RectControllerOptions) {
         super(options.rect.container);
@@ -20,24 +21,33 @@ export class RectController extends Drawable {
 
 
         const point = this.options.rect.options.point.copy()
-        point.x -= this.options.margin / 2;
-        point.y -= this.options.margin / 2;
-        this.coverRect = this.options.rect.container.uRectByOption(
-            {
+        point.x -= this.options.margin! / 2;
+        point.y -= this.options.margin! / 2;
+        this.coverRect = this.options.rect.container.uRectByOption({
                 point: point,
-                width: this.options.rect.options.width + this.options.margin,
-                height: this.options.rect.options.height + this.options.margin,
+                width: this.options.rect.options.width + (this.options.margin || 0),
+                height: this.options.rect.options.height + (this.options.margin || 0),
+                lineWidth: 1,
                 fill: null,
                 stroke: "white",
                 controller: false,
             }
         )
+        this.controllers = [
+            this.container.uCircleByOption({
+                point,
+                radius: 5,
+                fill: "red",
+                fillHover: "blue",
+            })
+        ];
     }
 
     draw(delta?: number) {
         super.draw(delta);
 
         this.coverRect.draw();
+        this.controllers.forEach((drawable) => drawable.draw());
     }
 
 

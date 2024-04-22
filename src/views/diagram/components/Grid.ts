@@ -1,6 +1,8 @@
 import {Drawable} from "@/views/diagram/components/Drawable";
 import {PanService} from "@/views/diagram/services/PanService";
 import {MouseService} from "@/views/diagram/services/MouseService";
+import type Container from "@/views/diagram/components/Container";
+import {AppInstance} from "@/AppInstance";
 
 export interface GridOptions {
     gridSize: number,
@@ -20,6 +22,19 @@ export class Grid extends Drawable {
         lineWidth: 1,
         x: PanService.x,
         y: PanService.y,
+    }
+
+
+    constructor(container: Container) {
+        super(container);
+
+        AppInstance.on("mousemove", this.onMouseMove.bind(this));
+    }
+
+    onMouseMove(e: MouseEvent) {
+        if (this.event(true)) {
+            this.container.redraw();
+        }
     }
 
     draw(): void {
@@ -94,8 +109,17 @@ export class Grid extends Drawable {
         }
     }
 
-    event(): void {
+    event(isCheck = false) {
         if (MouseService.isDown) {
+            if (isCheck) {
+                return true;
+            }
+
+            if (MouseService.mouseEvent) {
+                PanService.x += MouseService.mouseEvent!.movementX;
+                PanService.y += MouseService.mouseEvent!.movementY;
+            }
+
             this.options.x = PanService.x;
             this.options.y = PanService.y;
         }

@@ -12,6 +12,7 @@ export class Drawable {
         this.event();
     }
 
-    event() {
+    event(isCheck = false) {
+        //
     }
 }

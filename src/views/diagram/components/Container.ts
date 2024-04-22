@@ -5,6 +5,8 @@ import {Line} from "@/views/diagram/components/Line";
 import ObjectInitiator from "@/views/diagram/components/ObjectInitiator";
 import Rect, {type RectOptions} from "@/views/diagram/components/Rect";
 import {MouseService} from "@/views/diagram/services/MouseService";
+import type {CircleOptions} from "@/views/diagram/components/Circle";
+import Circle from "@/views/diagram/components/Circle";
 
 export default class Container {
     static container: Container;
@@ -14,15 +16,21 @@ export default class Container {
     drawers: Array<Drawable> = [];
 
     constructor(canvas: HTMLCanvasElement | string) {
-        if (!canvas)
-            throw "No Canvas !";
         if (typeof canvas == "string") {
-            this.canvas = document.querySelector(canvas);
+            let canvas1 = document.querySelector(canvas);
+
+            if (!canvas1) {
+                throw "No Canvas !";
+            }
+
+            this.canvas = canvas1 as HTMLCanvasElement;
         } else {
             this.canvas = canvas;
         }
+        if (!this.canvas)
+            throw "No Canvas !";
 
-        this.getContext();
+        this.context = this.canvas.getContext("2d");
         this.resizeCanvas();
 
         this.drawers = [
@@ -31,10 +39,6 @@ export default class Container {
         ];
 
         Container.container = this;
-    }
-
-    private getContext() {
-        this.context = this.canvas.getContext("2d");
     }
 
     private resizeCanvas() {
@@ -77,9 +81,29 @@ export default class Container {
         return new Rect(this, options);
     }
 
+    uCircle(x: number, y: number, radius: number) {
+
+        const point = new Point(x, y);
+
+        return this.uCircleByOption({
+            point,
+            radius
+        });
+    }
+
+    uCircleByOption(options: CircleOptions) {
+        return new Circle(this, options);
+    }
+
 
     public draw() {
-        this.uFill(null, null, null, null, "#8299c7");
+        this.uFill(
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            "#8299c7"
+        );
         this.drawers.forEach((drawer) => drawer.draw());
         MouseService.reset();
     }

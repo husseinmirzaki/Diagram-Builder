@@ -57,8 +57,8 @@ export default class Container {
 
     uLineD(x: number, y: number, x1: number, y1: number): Line {
         this.context.beginPath();
-        this.context.moveTo(x,y);
-        this.context.lineTo(x1,  y1);
+        this.context.moveTo(x, y);
+        this.context.lineTo(x1, y1);
         this.context.stroke();
     }
 
@@ -97,7 +97,8 @@ export default class Container {
     }
 
 
-    public draw() {
+    public draw(e) {
+        console.time("fps");
         this.uFill(
             undefined,
             undefined,
@@ -107,6 +108,7 @@ export default class Container {
         );
         this.drawers.forEach((drawer) => drawer.draw());
         MouseService.reset();
+        console.timeEnd("fps");
     }
 
     public redraw() {

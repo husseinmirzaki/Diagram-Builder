@@ -1,7 +1,6 @@
 import type Container from "@/views/diagram/components/Container";
 import {Drawable} from "@/views/diagram/components/Drawable";
 import Container from "@/views/diagram/components/Container";
-import {PanService} from "@/views/diagram/services/PanService";
 import {Point} from "@/views/diagram/components/Point";
 
 export default class ObjectInitiator extends Drawable {
@@ -18,6 +17,7 @@ export default class ObjectInitiator extends Drawable {
                 width: 100,
                 height: 100,
                 controller: true,
+                zIndex: 0,
             }),
         )
     }

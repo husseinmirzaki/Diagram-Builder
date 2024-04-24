@@ -5,16 +5,23 @@ import Container from "@/views/diagram/components/Container";
 import {MouseService} from "@/views/diagram/services/MouseService";
 import {RectController} from "@/views/diagram/components/RectController";
 import {AppInstance} from "@/AppInstance";
+import DrawableService from "@/views/diagram/services/DrawableService";
+
+export enum ObjectStates {
+    NORMAL,
+    SELECTED,
+}
 
 export interface RectOptions {
     point: Point,
     width: number,
     height: number,
-    state?: 0 | 1,
+    state?: ObjectStates,
     fill?: any,
     stroke?: any,
     lineWidth?: number,
     controller?: boolean,
+    zIndex?: number,
 }
 
 export default class Rect extends Drawable {
@@ -27,6 +34,9 @@ export default class Rect extends Drawable {
         this.options = Object.assign({
             lineWidth: 1,
         }, options);
+
+        this.zIndex = this.options.zIndex == 0 ? DrawableService.objectCounter++ : -1;
+
         if (!this.options.fill && !this.options.stroke) {
             this.options.fill = "black";
         }
@@ -36,23 +46,38 @@ export default class Rect extends Drawable {
             });
         }
 
-        AppInstance.on("click", this.onClick.bind(this));
+        AppInstance.on("mousedown", this.onMouseDown.bind(this));
+        AppInstance.on("mouseup", this.onMouseUp.bind(this));
     }
 
-    off() {
-        AppInstance.on("click", this.onClick.bind(this));
+    onMouseDown(e: PointerEvent) {
+
+        if (!PanService.isOnRect(this.options.point.x, this.options.point.y, this.options.width, this.options.height))
+            return;
+
+        if (!DrawableService.activeObject || (DrawableService.activeObject && DrawableService.activeObject.zIndex < this.zIndex)) {
+            DrawableService.activeObject = this;
+        }
     }
 
-    onClick(e: PointerEvent) {
-         if (this.event(true)) {
-             this.container.redraw();
-         }
-    }
+    onMouseUp(e: PointerEvent) {
 
+        if (!PanService.isOnRect(this.options.point.x, this.options.point.y, this.options.width, this.options.height))
+            return;
+
+        if (DrawableService.activeObject == this && !MouseService.isMoved) {
+            this.options.state = this.options.state == ObjectStates.SELECTED ? ObjectStates.NORMAL : ObjectStates.SELECTED;
+            this.container.redraw();
+        }
+
+    }
 
     draw(delta?: number) {
         super.draw(delta);
 
+        if (this.options.state == ObjectStates.SELECTED && this.rectController) {
+            this.rectController.draw();
+        }
 
         this.container.context.fillStyle = this.options.fill || "";
         this.container.context.strokeStyle = this.options.stroke;
@@ -74,25 +99,9 @@ export default class Rect extends Drawable {
             );
         }
 
-        if (this.options.state == 1 && this.rectController) {
-            this.rectController.draw();
-        }
     }
 
     event(isCheck = false) {
         super.event(isCheck);
-        if (
-            MouseService.isOnRect(
-                this.options.point!.x + PanService.x,
-                this.options.point!.y + PanService.y,
-                this.options.width,
-                this.options.height
-            ) &&
-            MouseService.isClick
-        ) {
-            if (!isCheck)
-                this.options.state = this.options.state == 1 ? 0 : 1;
-            return true;
-        }
     }
 }

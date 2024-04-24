@@ -64,7 +64,7 @@ export class MouseService {
         AppInstance.mitt.emit("mousemove", e);
     }
 
-    static isOnRect(x, y, width, height) {
+    static isOnRect(x: number, y: number, width: number, height: number) {
         return x < this.x && y < this.y && x + width > this.x && y + height > this.y;
     }
 

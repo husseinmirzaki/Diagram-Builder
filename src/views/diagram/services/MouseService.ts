@@ -17,6 +17,7 @@ export class MouseService {
         window.addEventListener("mouseup", this.onMouseUp.bind(this));
         window.addEventListener("mousemove", this.onMouseMove.bind(this));
         window.addEventListener("click", this.onClick.bind(this));
+        window.addEventListener("wheel", this.onWheel.bind(this));
     }
 
     static destroy() {
@@ -24,8 +25,12 @@ export class MouseService {
         window.removeEventListener("mouseup", this.onMouseUp.bind(this));
         window.removeEventListener("mousemove", this.onMouseMove.bind(this));
         window.removeEventListener("click", this.onClick.bind(this));
+        window.removeEventListener("wheel", this.onWheel.bind(this));
     }
 
+    static onWheel(e: WheelEvent) {
+        AppInstance.mitt.emit("wheel", e);
+    }
     static onMouseDown(e: PointerEvent) {
         AppInstance.mitt.emit("mousedown", e);
         this.isDown = true;

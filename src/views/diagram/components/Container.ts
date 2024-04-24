@@ -55,10 +55,11 @@ export default class Container {
         }
     }
 
-    uLine(x: number, y: number, x1: number, y1: number): Line {
-        const point1 = new Point(x, y);
-        const point2 = new Point(x1, y1);
-        return this.uLineByOption(point1, point2);
+    uLineD(x: number, y: number, x1: number, y1: number): Line {
+        this.context.beginPath();
+        this.context.moveTo(x,y);
+        this.context.lineTo(x1,  y1);
+        this.context.stroke();
     }
 
     uLineByOption(point1: Point, point2: Point): Line {

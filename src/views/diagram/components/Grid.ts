@@ -3,6 +3,7 @@ import {PanService} from "@/views/diagram/services/PanService";
 import {MouseService} from "@/views/diagram/services/MouseService";
 import type Container from "@/views/diagram/components/Container";
 import {AppInstance} from "@/AppInstance";
+import App from "@/App.vue";
 
 export interface GridOptions {
     gridSize: number,
@@ -16,7 +17,7 @@ export interface GridOptions {
 export class Grid extends Drawable {
 
     options: GridOptions = {
-        gridSize: 30,
+        gridSize: 50,
         gridColor: "#c7cad3",
         centerGridColor: "#eeeeee",
         lineWidth: 1,
@@ -29,6 +30,7 @@ export class Grid extends Drawable {
         super(container);
 
         AppInstance.on("mousemove", this.onMouseMove.bind(this));
+        AppInstance.on("wheel", this.onWheel.bind(this));
     }
 
     onMouseMove(e: MouseEvent) {
@@ -37,76 +39,61 @@ export class Grid extends Drawable {
         }
     }
 
+    onWheel(e: WheelEvent) {
+        this.options.gridSize = Math.min(Math.max(10, this.options.gridSize - e.deltaY / 30), 100);
+        console.log(this.options.gridSize);
+        this.container.redraw();
+    }
+
     draw(): void {
         super.draw();
 
         this.container.context.lineWidth = this.options.lineWidth;
-        for (let row = 0; row < 400; row++) {
-            if (row == 0) {
-                this.container.context.strokeStyle = this.options.centerGridColor;
-            } else {
-                this.container.context.strokeStyle = this.options.gridColor;
-            }
-            // vertical lines
-            this.container.uLine(
-                this.options.x - row * this.options.gridSize,
-                0,
-                this.options.x - row * this.options.gridSize,
-                this.options.y
-            ).draw();
-            this.container.uLine(
-                this.options.x + row * this.options.gridSize,
-                0,
-                this.options.x + row * this.options.gridSize,
-                this.options.y
-            ).draw();
-            this.container.uLine(
-                this.options.x - row * this.options.gridSize,
-                this.options.y - row * this.options.gridSize,
-                this.options.x - row * this.options.gridSize,
-                innerHeight,
-            ).draw();
-            this.container.uLine(
-                this.options.x + row * this.options.gridSize,
-                this.options.y - row * this.options.gridSize,
-                this.options.x + row * this.options.gridSize,
-                innerHeight,
-            ).draw();
 
-            // horizontal lines
-            this.container.uLine(
-                0,
-                this.options.y - row * this.options.gridSize,
-                this.options.x,
-                this.options.y - row * this.options.gridSize,
-            ).draw();
-            this.container.uLine(
-                0,
-                this.options.y + row * this.options.gridSize,
-                this.options.x,
-                this.options.y + row * this.options.gridSize,
-            ).draw();
-            this.container.uLine(
-                this.options.x - row * this.options.gridSize,
-                this.options.y - row * this.options.gridSize,
-                innerWidth,
-                this.options.y - row * this.options.gridSize,
-            ).draw();
-            this.container.uLine(
-                this.options.x - row * this.options.gridSize,
-                this.options.y + row * this.options.gridSize,
-                innerWidth,
-                this.options.y + row * this.options.gridSize,
-            ).draw();
-            // if (this.options.x - row * this.options.gridSize < 0) {
-            //     break;
-            // }
-            // for (let col = 0; col < innerWidth; col += this.options.gridSize) {
-            //
-            //     this.container.uLine(col, 0, col, innerHeight).draw();
-            //     this.container.uLine(0, row, innerWidth, row).draw();
-            // }
+        // const px = (innerWidth / 2) - PanService.x ;
+        // const py = PanService.y - (innerHeight / 2);
+        const dx = PanService.x;
+        const dy = PanService.y;
+        const rx = dx % this.options.gridSize;
+        const ry = dy % this.options.gridSize;
+
+
+        const possibleRows = Math.max(innerWidth, innerHeight) / this.options.gridSize;
+        const centerRow = Math.floor(PanService.x / this.options.gridSize);
+        const centerCol = Math.floor(PanService.y / this.options.gridSize);
+
+        if (centerRow <= possibleRows) {
+            this.container.context.strokeStyle = this.options.centerGridColor;
+            this.container.uLineD(centerRow * this.options.gridSize + rx, 0, centerRow * this.options.gridSize + rx, innerHeight);
         }
+        if (centerCol <= possibleRows) {
+            this.container.context.strokeStyle = this.options.centerGridColor;
+            this.container.uLineD(0, centerCol * this.options.gridSize + ry, innerWidth, centerCol * this.options.gridSize + ry);
+        }
+
+        this.container.context.strokeStyle = this.options.gridColor;
+        for (let row = 0; row < Math.max(innerWidth, innerHeight) / this.options.gridSize; row++) {
+            if (row == centerRow) {
+                this.container.uLineD(0, row * this.options.gridSize + ry, innerWidth, row * this.options.gridSize + ry);
+            } else if (row == centerCol) {
+                this.container.uLineD(row * this.options.gridSize + rx, 0, row * this.options.gridSize + rx, innerHeight);
+            } else {
+                this.container.uLineD(0, row * this.options.gridSize + ry, innerWidth, row * this.options.gridSize + ry);
+                this.container.uLineD(row * this.options.gridSize + rx, 0, row * this.options.gridSize + rx, innerHeight);
+            }
+        }
+
+        this.container.context.font = "30px Consolas"
+        this.container.context.fillStyle = "#000000";
+        this.container.context.fillText(`
+innerWidth: ${innerWidth} ,
+innerHeight: ${innerHeight}`, 100, 100);
+        this.container.context.fillText(`
+rx: ${rx} ,
+ry: ${ry} ,
+dx: ${dx} ,
+dy: ${dy} ,
+        `, 100, 130);
     }
 
     event(isCheck = false) {

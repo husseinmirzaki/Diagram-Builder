@@ -23,7 +23,7 @@ onMounted(() => {
   ResizeService.destroy();
   if (canvas.value) {
     const container = new Container(canvas.value);
-    container.draw();
+    container.redraw();
     MouseService.init();
     ResizeService.init();
   }

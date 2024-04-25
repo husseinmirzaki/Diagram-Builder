@@ -3,7 +3,7 @@ import type {Point} from "@/views/diagram/components/Point";
 import {PanService} from "@/views/diagram/services/PanService";
 import Container from "@/views/diagram/components/Container";
 import {MouseService} from "@/views/diagram/services/MouseService";
-import {RectController} from "@/views/diagram/components/RectController";
+import {RectController} from "@/views/diagram/components/controllers/RectController";
 import {AppInstance} from "@/AppInstance";
 import DrawableService from "@/views/diagram/services/DrawableService";
 

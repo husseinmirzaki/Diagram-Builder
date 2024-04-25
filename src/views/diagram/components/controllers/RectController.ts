@@ -1,6 +1,7 @@
 import Rect from "@/views/diagram/components/Rect";
 import {Drawable} from "@/views/diagram/components/Drawable";
 import type Circle from "@/views/diagram/components/Circle";
+import type {Point} from "@/views/diagram/components/Point";
 
 export interface RectControllerOptions {
     rect: Rect;
@@ -18,11 +19,11 @@ export class RectController extends Drawable {
         this.options = Object.assign({
             margin: 10,
         }, options);
+        const hm = this.options.margin! / 2;
 
-
-        const point = this.options.rect.options.point.copy()
-        point.x -= this.options.margin! / 2;
-        point.y -= this.options.margin! / 2;
+        let point = this.options.rect.options.point.copy()
+        point.x -= hm;
+        point.y -= hm;
         this.coverRect = this.options.rect.container.uRectByOption({
                 point: point,
                 width: this.options.rect.options.width + (this.options.margin || 0),
@@ -33,14 +34,38 @@ export class RectController extends Drawable {
                 controller: false,
             }
         )
-        this.controllers = [
+        this.addCircleController(point);
+
+        point = this.options.rect.options.point.copy()
+        point.x += this.options.rect.options.width + hm;
+        point.y += this.options.rect.options.height + hm;
+        this.addCircleController(point);
+
+        point = this.options.rect.options.point.copy()
+        point.x -= hm;
+        point.y += this.options.rect.options.height + hm;
+        this.addCircleController(point);
+
+        point = this.options.rect.options.point.copy()
+        point.x += this.options.rect.options.width + hm;
+        point.y += this.options.rect.options.height + hm;
+        this.addCircleController(point);
+
+        point = this.options.rect.options.point.copy()
+        point.x += this.options.rect.options.width + hm;
+        point.y -= hm;
+        this.addCircleController(point);
+    }
+
+    addCircleController(point: Point) {
+        this.controllers.push(
             this.container.uCircleByOption({
                 point,
                 radius: 5,
                 fill: "red",
                 fillHover: "blue",
             })
-        ];
+        );
     }
 
     draw(delta?: number) {

@@ -12,6 +12,7 @@ export default class Container {
     static container: Container;
     canvas: HTMLCanvasElement;
     context: CanvasRenderingContext2D;
+    time: number = 0;
 
     drawers: Array<Drawable> = [];
 
@@ -98,7 +99,8 @@ export default class Container {
 
 
     public draw(e) {
-        console.time("fps");
+        const delta = e - this.time;
+        this.time = e;
         this.uFill(
             undefined,
             undefined,
@@ -108,7 +110,9 @@ export default class Container {
         );
         this.drawers.forEach((drawer) => drawer.draw());
         MouseService.reset();
-        console.timeEnd("fps");
+        this.context.fillStyle = 'black';
+        // this.context.font = "";
+        this.context.fillText(delta.toString(), 10, 30);
     }
 
     public redraw() {

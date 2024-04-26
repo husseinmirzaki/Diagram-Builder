@@ -14,18 +14,12 @@
 
 import {onMounted, type Ref, ref} from "vue";
 import Container from "@/views/diagram/components/Container";
-import {MouseService} from "@/views/diagram/services/MouseService";
-import ResizeService from "@/views/diagram/services/ResizeService";
 
 const canvas: Ref<HTMLCanvasElement | null> = ref(null);
 onMounted(() => {
-  MouseService.destroy();
-  ResizeService.destroy();
   if (canvas.value) {
     const container = new Container(canvas.value);
     container.redraw();
-    MouseService.init();
-    ResizeService.init();
   }
 });
 </script>

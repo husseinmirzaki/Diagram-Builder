@@ -22,11 +22,11 @@ export class PanService {
     static init() {
         AppInstance.on("wheel", this.onWheel.bind(this));
         AppInstance.on("mousemove", this.onMouseMove.bind(this));
+        AppInstance.on("keydown", this.onKeyDown.bind(this));
     }
 
     static onWheel(e: WheelEvent) {
         this.z = this.z + ((e.deltaY > 0 ? -1 : 1) / 80);
-        console.log(this.z, e);
         Container.container.redraw();
     }
 
@@ -36,6 +36,13 @@ export class PanService {
                 PanService.x += e.movementX * (1 / PanService.z);
                 PanService.y += e.movementY * (1 / PanService.z);
             }
+            Container.container.redraw();
+        }
+    }
+
+    static onKeyDown(e: KeyboardEvent) {
+        if (e.code == "Digit0") {
+            PanService.z = 1;
             Container.container.redraw();
         }
     }

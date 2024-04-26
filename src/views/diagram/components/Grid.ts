@@ -34,11 +34,6 @@ export class Grid extends Drawable {
 
     onMouseMove(e: MouseEvent) {
         if (MouseService.isDown) {
-            if (MouseService.mouseEvent) {
-                PanService.x += e.movementX * (1 / PanService.z);
-                PanService.y += e.movementY * (1 / PanService.z);
-            }
-
             this.options.x = PanService.x;
             this.options.y = PanService.y;
             this.container.redraw();

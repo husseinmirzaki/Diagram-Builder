@@ -36,7 +36,7 @@ export default class Container {
         this.resizeCanvas();
 
         this.drawers = [
-            // new Grid(this),
+            new Grid(this),
             new ObjectInitiator(this),
         ];
 
@@ -112,14 +112,15 @@ export default class Container {
         );
         this.drawers.forEach((drawer) => drawer.draw());
         MouseService.reset();
-
-        this.context.fillStyle = 'white';
-        this.context.fillText(this.rendered.toString(), 10, 30);
-        this.context.fillText((Math.floor(1000 / delta)).toString(), 10, 60);
     }
 
     public redraw() {
         requestAnimationFrame(this.draw.bind(this));
     }
 
+    public static redraw() {
+        if (this.container) {
+            this.container.redraw();
+        }
+    }
 }

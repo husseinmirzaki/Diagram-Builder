@@ -1,6 +1,8 @@
 import Container from "@/views/diagram/components/Container";
 import {makeId} from "@/views/diagram/Uils";
 import {PanService} from "@/views/diagram/services/PanService";
+import {AppInstance} from "@/AppInstance";
+import {MouseService} from "@/views/diagram/services/MouseService";
 
 export enum ShapeStates {
     NORMAL,
@@ -13,11 +15,12 @@ export class Drawable {
     zIndex: number;
     container: Container;
 
-
     constructor(container: Container) {
         this.id = makeId(10);
         this.zIndex = -1;
         this.container = container;
+
+        AppInstance.on("click", this.onGlobalClick.bind(this));
     }
 
     draw(delta?: number): void {
@@ -27,9 +30,6 @@ export class Drawable {
     }
 
     render(delta?: number) {
-    }
-
-    event(isCheck = false) {
     }
 
     getObjectBoundaries(): { x: number, y: number, width: number, height: number } {
@@ -48,4 +48,15 @@ export class Drawable {
         return x > -b.width * PanService.z && x < innerWidth + b.width * PanService.z && y > -b.height * PanService.z && y < innerHeight + b.height * PanService.z;
     }
 
+    onGlobalClick(e: PointerEvent) {
+        const b = this.getObjectBoundaries();
+        if (PanService.isOnRect(b.x, b.y, b.width, b.height)) {
+            if (!MouseService.isMoved) {
+                this.onClick(e);
+            }
+        }
+    }
+
+    onClick(e: PointerEvent) {
+    }
 }

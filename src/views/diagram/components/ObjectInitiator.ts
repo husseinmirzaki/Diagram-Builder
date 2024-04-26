@@ -2,8 +2,6 @@ import type Container from "@/views/diagram/components/Container";
 import {Drawable} from "@/views/diagram/components/Drawable";
 import Container from "@/views/diagram/components/Container";
 import {Point} from "@/views/diagram/components/Point";
-import {PanService} from "@/views/diagram/services/PanService";
-import DrawableService from "@/views/diagram/services/DrawableService";
 
 export default class ObjectInitiator extends Drawable {
 
@@ -14,23 +12,9 @@ export default class ObjectInitiator extends Drawable {
         super(container);
 
         const padding = 15;
-        const width = 50;
-        const height = 50;
-        const count = 10;
-
-        for (let i = 0; i < count; i++) {
-            for (let j = 0; j < count; j++) {
-                let c = this.container.uCircle(
-                    (-Math.floor(count / 2) * width) + (i * width) + padding / 2,
-                    (-Math.floor(count / 2) * width) + (j * width) + padding / 2,
-                    width / 2 - padding,
-                );
-                c.options.fill = "red";
-                c.zIndex = DrawableService.objectCounter++;
-                this.drawables.push(c);
-            }
-        }
-
+        const width = 100;
+        const height = 100;
+        const count = 2;
 
         for (let i = 0; i < count; i++) {
             for (let j = 0; j < count; j++) {

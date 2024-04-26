@@ -1,6 +1,6 @@
-import Rect from "@/views/diagram/components/Rect";
+import Rect from "@/views/diagram/components/shapes/Rect";
 import {Drawable} from "@/views/diagram/components/Drawable";
-import type Circle from "@/views/diagram/components/Circle";
+import type Circle from "@/views/diagram/components/shapes/Circle";
 import type {Point} from "@/views/diagram/components/Point";
 
 export interface RectControllerOptions {

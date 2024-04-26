@@ -1,4 +1,4 @@
-import {Drawable} from "@/views/diagram/components/Drawable";
+import {Drawable, ShapeStates} from "@/views/diagram/components/Drawable";
 import type {Point} from "@/views/diagram/components/Point";
 import {PanService} from "@/views/diagram/services/PanService";
 import Container from "@/views/diagram/components/Container";
@@ -7,16 +7,11 @@ import {RectController} from "@/views/diagram/components/controllers/RectControl
 import {AppInstance} from "@/AppInstance";
 import DrawableService from "@/views/diagram/services/DrawableService";
 
-export enum ObjectStates {
-    NORMAL,
-    SELECTED,
-}
-
 export interface RectOptions {
     point: Point,
     width: number,
     height: number,
-    state?: ObjectStates,
+    state?: ShapeStates,
     fill?: any,
     stroke?: any,
     lineWidth?: number,
@@ -55,7 +50,7 @@ export default class Rect extends Drawable {
         if (!PanService.isOnRect(this.options.point.x, this.options.point.y, this.options.width, this.options.height))
             return;
 
-        if (!DrawableService.activeObject || (DrawableService.activeObject && DrawableService.activeObject.zIndex < this.zIndex)) {
+        if (!DrawableService.activeObject ) {
             DrawableService.activeObject = this;
         }
     }
@@ -66,16 +61,27 @@ export default class Rect extends Drawable {
             return;
 
         if (DrawableService.activeObject == this && !MouseService.isMoved) {
-            this.options.state = this.options.state == ObjectStates.SELECTED ? ObjectStates.NORMAL : ObjectStates.SELECTED;
+            this.options.state = this.options.state == ShapeStates.SELECTED ? ShapeStates.NORMAL : ShapeStates.SELECTED;
             this.container.redraw();
         }
 
     }
 
-    draw(delta?: number) {
-        super.draw(delta);
 
-        if (this.options.state == ObjectStates.SELECTED && this.rectController) {
+    getObjectBoundaries(): { x: number; y: number; width: number; height: number } {
+        return {
+            x: this.options.point.x,
+            y: this.options.point.y,
+            width: this.options.width,
+            height: this.options.height
+        };
+    }
+
+    render(delta?: number) {
+
+        this.container.rendered++;
+
+        if (this.options.state == ShapeStates.SELECTED && this.rectController) {
             this.rectController.draw();
         }
 
@@ -85,17 +91,17 @@ export default class Rect extends Drawable {
 
         if (!this.options.fill) {
             this.container.context.strokeRect(
-                PanService.x + this.options.point!.x,
-                PanService.y + this.options.point!.y,
-                this.options.width!,
-                this.options.height!
+                (PanService.x + this.options.point!.x) * PanService.z,
+                (PanService.y + this.options.point!.y) * PanService.z,
+                (this.options.width!) * PanService.z,
+                (this.options.height!) * PanService.z
             );
         } else {
             this.container.context.fillRect(
-                PanService.x + this.options.point!.x,
-                PanService.y + this.options.point!.y,
-                this.options.width!,
-                this.options.height!
+                (PanService.x + this.options.point!.x) * PanService.z,
+                (PanService.y + this.options.point!.y) * PanService.z,
+                (this.options.width!) * PanService.z,
+                (this.options.height!) * PanService.z
             );
         }
 

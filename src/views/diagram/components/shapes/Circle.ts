@@ -1,15 +1,14 @@
-import {Drawable} from "@/views/diagram/components/Drawable";
+import {Drawable, ShapeStates} from "@/views/diagram/components/Drawable";
 import type {Point} from "@/views/diagram/components/Point";
 import {PanService} from "@/views/diagram/services/PanService";
 import Container from "@/views/diagram/components/Container";
-import {MouseService} from "@/views/diagram/services/MouseService";
 import {AppInstance} from "@/AppInstance";
 import CircleController from "@/views/diagram/components/controllers/CircleController";
 
 export interface CircleOptions {
     point: Point,
     radius: number,
-    state?: 0 | 1 | 2,
+    state?: ShapeStates,
     fill?: any,
     fillHover?: any,
     stroke?: any,
@@ -44,38 +43,43 @@ export default class Circle extends Drawable {
     }
 
     onClick(e: PointerEvent) {
-        if (this.event(true)) {
-            this.container.redraw();
-        }
+
     }
 
     onMouseMove(e: MouseEvent) {
-
+        if (!this.options.fillHover) return;
         const diff = this.options.point.diff(PanService.mouseX, PanService.mouseY);
         if (diff >= 0 && diff <= this.options.radius) {
-            this.options.state = 2;
+            this.options.state = ShapeStates.HOVERED;
             this.container.redraw();
-        } else if (this.options.state == 2) {
-            this.options.state = 0;
+        } else if (this.options.state == ShapeStates.HOVERED) {
+            this.options.state = ShapeStates.NORMAL;
             this.container.redraw();
         }
 
     }
 
 
-    draw(delta?: number) {
-        super.draw(delta);
+    getObjectBoundaries(): { x: number; y: number; width: number; height: number } {
+        return {
+            x: this.options.point.x,
+            y: this.options.point.y,
+            width: this.options.radius,
+            height: this.options.radius
+        };
+    }
 
-
-        this.container.context.fillStyle = this.options.state == 2 ? this.options.fillHover || this.options.fill : this.options.fill;
+    render(delta?: number) {
+        this.container.rendered++;
+        this.container.context.fillStyle = this.options.state == ShapeStates.HOVERED ? this.options.fillHover || this.options.fill : this.options.fill;
         this.container.context.strokeStyle = this.options.stroke;
         this.container.context.lineWidth = this.options.lineWidth || 1;
 
         this.container.context.beginPath();
         this.container.context.arc(
-            this.options.point!.x + PanService.x,
-            this.options.point!.y + PanService.y,
-            this.options.radius,
+            (this.options.point!.x + PanService.x) * PanService.z,
+            (this.options.point!.y + PanService.y) * PanService.z,
+            this.options.radius * PanService.z,
             0,
             Math.PI * 2,
             false
@@ -91,7 +95,4 @@ export default class Circle extends Drawable {
         }
     }
 
-    event(isCheck = false) {
-        super.event(isCheck);
-    }
 }

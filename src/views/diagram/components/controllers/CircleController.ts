@@ -1,4 +1,4 @@
-import type Circle from "@/views/diagram/components/Circle";
+import type Circle from "@/views/diagram/components/shapes/Circle";
 
 export interface CircleControllerOptions {
     shape: Circle,

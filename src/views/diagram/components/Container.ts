@@ -1,18 +1,19 @@
 import {Grid} from "@/views/diagram/components/Grid";
 import type {Drawable} from "@/views/diagram/components/Drawable";
 import {Point} from "@/views/diagram/components/Point";
-import {Line} from "@/views/diagram/components/Line";
+import {Line} from "@/views/diagram/components/shapes/Line";
 import ObjectInitiator from "@/views/diagram/components/ObjectInitiator";
-import Rect, {type RectOptions} from "@/views/diagram/components/Rect";
+import Rect, {type RectOptions} from "@/views/diagram/components/shapes/Rect";
 import {MouseService} from "@/views/diagram/services/MouseService";
-import type {CircleOptions} from "@/views/diagram/components/Circle";
-import Circle from "@/views/diagram/components/Circle";
+import type {CircleOptions} from "@/views/diagram/components/shapes/Circle";
+import Circle from "@/views/diagram/components/shapes/Circle";
 
 export default class Container {
     static container: Container;
     canvas: HTMLCanvasElement;
     context: CanvasRenderingContext2D;
     time: number = 0;
+    rendered: number = 0;
 
     drawers: Array<Drawable> = [];
 
@@ -35,7 +36,7 @@ export default class Container {
         this.resizeCanvas();
 
         this.drawers = [
-            new Grid(this),
+            // new Grid(this),
             new ObjectInitiator(this),
         ];
 
@@ -98,7 +99,8 @@ export default class Container {
     }
 
 
-    public draw(e) {
+    public draw(e: number) {
+        this.rendered = 0;
         const delta = e - this.time;
         this.time = e;
         this.uFill(
@@ -106,13 +108,14 @@ export default class Container {
             undefined,
             undefined,
             undefined,
-            "#8299c7"
+            "#7896c2"
         );
         this.drawers.forEach((drawer) => drawer.draw());
         MouseService.reset();
-        this.context.fillStyle = 'black';
-        // this.context.font = "";
-        this.context.fillText(delta.toString(), 10, 30);
+
+        this.context.fillStyle = 'white';
+        this.context.fillText(this.rendered.toString(), 10, 30);
+        this.context.fillText((Math.floor(1000 / delta)).toString(), 10, 60);
     }
 
     public redraw() {

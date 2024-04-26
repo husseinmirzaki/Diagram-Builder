@@ -6,6 +6,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import {AppInstance} from "@/AppInstance";
+import {PanService} from "@/views/diagram/services/PanService";
 
 const app = createApp(App)
 

@@ -5,6 +5,7 @@ import {PanService} from "@/views/diagram/services/PanService";
 import {MouseService} from "@/views/diagram/services/MouseService";
 import KeyboardService from "@/views/diagram/services/KeyboardService";
 import ResizeService from "@/views/diagram/services/ResizeService";
+import ChunkService from "@/views/diagram/services/ChunkService";
 
 export class AppInstance {
     public static app: App;
@@ -17,6 +18,7 @@ export class AppInstance {
         MouseService.init();
         KeyboardService.init();
         ResizeService.init();
+        ChunkService.init();
     }
 
     public static on(name: string, fn: (e: any) => void) {

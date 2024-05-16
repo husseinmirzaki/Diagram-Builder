@@ -2,6 +2,8 @@ import type Container from "@/views/diagram/components/Container";
 import {Drawable} from "@/views/diagram/components/Drawable";
 import Container from "@/views/diagram/components/Container";
 import {Point} from "@/views/diagram/components/Point";
+import {AppInstance} from "@/AppInstance";
+import ChunkService from "@/views/diagram/services/ChunkService";
 
 export default class ObjectInitiator extends Drawable {
 
@@ -30,6 +32,10 @@ export default class ObjectInitiator extends Drawable {
                 }));
             }
         }
+
+        AppInstance.on("click" , (e: PointerEvent) => {
+            console.log(ChunkService.getPointShapes(e.x, e.y));
+        });
     }
 
     draw(delta?: number) {

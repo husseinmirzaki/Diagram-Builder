@@ -27,7 +27,7 @@ export class PanService {
 
     static onWheel(e: WheelEvent) {
         this.z = this.z + ((e.deltaY > 0 ? -1 : 1) / 80);
-        Container.container.redraw();
+        Container.container?.redraw();
     }
 
     static onMouseMove(e: MouseEvent) {
@@ -36,14 +36,14 @@ export class PanService {
                 PanService.x += e.movementX * (1 / PanService.z);
                 PanService.y += e.movementY * (1 / PanService.z);
             }
-            Container.container.redraw();
+            Container.container?.redraw();
         }
     }
 
     static onKeyDown(e: KeyboardEvent) {
         if (e.code == "Digit0") {
             PanService.z = 1;
-            Container.container.redraw();
+            Container.container?.redraw();
         }
     }
 }

@@ -9,6 +9,7 @@ export default class ResizeService {
     }
 
     static onResize() {
+        if (!Container.container) return;
         Container.container.context.canvas.height = innerHeight;
         Container.container.context.canvas.width = innerWidth;
         Container.container.redraw();

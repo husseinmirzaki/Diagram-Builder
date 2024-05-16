@@ -7,6 +7,7 @@ import Rect, {type RectOptions} from "@/views/diagram/components/shapes/Rect";
 import {MouseService} from "@/views/diagram/services/MouseService";
 import type {CircleOptions} from "@/views/diagram/components/shapes/Circle";
 import Circle from "@/views/diagram/components/shapes/Circle";
+import ChunkService from "@/views/diagram/services/ChunkService";
 
 export default class Container {
     static container: Container;
@@ -100,6 +101,7 @@ export default class Container {
 
 
     public draw(e: number) {
+        ChunkService.clearChunks();
         this.rendered = 0;
         const delta = e - this.time;
         this.time = e;

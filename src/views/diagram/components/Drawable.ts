@@ -3,6 +3,7 @@ import {makeId} from "@/views/diagram/Uils";
 import {PanService} from "@/views/diagram/services/PanService";
 import {AppInstance} from "@/AppInstance";
 import {MouseService} from "@/views/diagram/services/MouseService";
+import ChunkService from "@/views/diagram/services/ChunkService";
 
 export enum ShapeStates {
     NORMAL,
@@ -20,11 +21,15 @@ export class Drawable {
         this.zIndex = -1;
         this.container = container;
 
-        AppInstance.on("click", this.onGlobalClick.bind(this));
     }
 
+    addToChunk() {
+        const bb = this.getObjectBoundaries();
+        ChunkService.addToChunk(this.id, bb.x + PanService.x, bb.y + PanService.y, bb.width, bb.height);
+    }
     draw(delta?: number): void {
         if (this.shouldRender()) {
+            this.addToChunk();
             this.render(delta);
         }
     }
@@ -52,11 +57,9 @@ export class Drawable {
         const b = this.getObjectBoundaries();
         if (PanService.isOnRect(b.x, b.y, b.width, b.height)) {
             if (!MouseService.isMoved) {
-                this.onClick(e);
+                // this.onClick(e);
             }
         }
     }
 
-    onClick(e: PointerEvent) {
-    }
 }
